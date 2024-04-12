@@ -23,7 +23,27 @@ document.getElementById('send').addEventListener('click', function () {
                 // max_tokens: 150
             })
         }).then(response => response.json()).then(data => {
-            document.getElementById('response').innerText = data.choices[0].message.content;
+            chrome.windows.create({
+                url: chrome.runtime.getURL("chat.html"),
+                type: "popup",
+                width: 320,
+                height: 500,
+                left: 100,
+                top: 100
+            }, function (win) {
+                // document.getElementById('response').innerText = 
+                const response = data.choices[0].message.content;
+                setTimeout(() => {
+                    chrome.scripting.executeScript({
+                        target: { tabId: win.tabs[0].id },
+                        function: function (text) {
+                            chrome.runtime.sendMessage({ action: "setText", text: text });
+                        },
+                        args: [response]
+                    });
+                }, 1000); // Adjust delay as necessary
+            });
+            // Optional: Pass initial data such as selectedText to the window.
             button.textContent = 'Send to GPT-4';
             button.disabled = false;
         }).catch(error => {
@@ -34,7 +54,6 @@ document.getElementById('send').addEventListener('click', function () {
         });
     });
 });
-
 
 // Request the selected text from the background page when popup is opened
 window.onload = function () {

@@ -3,6 +3,7 @@
   "name": "GPT-4 Text Interaction",
   "version": "1.0",
   "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icon.png"
