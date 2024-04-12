@@ -20,7 +20,7 @@ document.getElementById('send').addEventListener('click', function () {
                     role: 'user',
                     content: fullPrompt
                 }],
-                max_tokens: 150
+                // max_tokens: 150
             })
         }).then(response => response.json()).then(data => {
             document.getElementById('response').innerText = data.choices[0].message.content;
@@ -39,7 +39,13 @@ document.getElementById('send').addEventListener('click', function () {
 // Request the selected text from the background page when popup is opened
 window.onload = function () {
     chrome.runtime.sendMessage({ message: "getSelectedText" }, function (response) {
-        // Display only the first 100 characters of the selected text
-        document.getElementById('selected-text').textContent = response.text.slice(0, 1000);
+        if (response.text.trim().length === 0) {
+            document.getElementById('no-text-selected').className = 'visible';
+            document.getElementById('interaction-area').className = 'hidden';
+        } else {
+            document.getElementById('selected-text').textContent = response.text.slice(0, 100);
+            document.getElementById('no-text-selected').className = 'hidden';
+            document.getElementById('interaction-area').className = 'visible';
+        }
     });
 };
