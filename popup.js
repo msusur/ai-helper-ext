@@ -43,7 +43,7 @@ window.onload = function () {
             document.getElementById('no-text-selected').className = 'visible';
             document.getElementById('interaction-area').className = 'hidden';
         } else {
-            document.getElementById('selected-text').textContent = response.text.slice(0, 100);
+            document.getElementById('selected-text').textContent = `${response.text.slice(0, 500)}...`;
             document.getElementById('no-text-selected').className = 'hidden';
             document.getElementById('interaction-area').className = 'visible';
         }
