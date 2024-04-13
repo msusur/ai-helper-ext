@@ -1,3 +1,5 @@
+document.addEventListener('DOMContentLoaded', displayHistory);
+
 document.getElementById('send').addEventListener('click', function () {
     const button = this;
     button.textContent = 'Loading...';
@@ -23,7 +25,10 @@ document.getElementById('send').addEventListener('click', function () {
                 // max_tokens: 150
             })
         }).then(response => response.json()).then(data => {
-            document.getElementById('response').innerText = data.choices[0].message.content;
+            const responseText = data.choices[0].message.content.trim();
+            document.getElementById('response').innerText = responseText;
+            saveHistory(promptText, responseText);
+            displayHistory();
             button.textContent = 'Send to GPT-4';
             button.disabled = false;
         }).catch(error => {
@@ -35,6 +40,40 @@ document.getElementById('send').addEventListener('click', function () {
     });
 });
 
+function saveHistory(prompt, response) {
+    let history = JSON.parse(localStorage.getItem('history')) || [];
+    history.push({ prompt, response });
+    localStorage.setItem('history', JSON.stringify(history));
+}
+
+function displayHistory() {
+    const history = JSON.parse(localStorage.getItem('history')) || [];
+    const historyElement = document.getElementById('history');
+    historyElement.innerHTML = ''; // Clear existing history display
+
+    history.forEach((item, index) => {
+        const entry = document.createElement('div');
+        entry.className = 'history-entry';
+
+        const promptHeader = document.createElement('div');
+        promptHeader.className = 'history-header';
+        promptHeader.textContent = `Prompt ${index + 1}: Click to Expand`;
+        promptHeader.onclick = function () {
+            const isVisible = responseDiv.style.display === 'block';
+            responseDiv.style.display = isVisible ? 'none' : 'block';
+            promptHeader.textContent = `Prompt ${index + 1}: Click to ${isVisible ? 'Expand' : 'Collapse'}`;
+        };
+
+        const responseDiv = document.createElement('div');
+        responseDiv.className = 'history-response';
+        responseDiv.style.display = 'none';
+        responseDiv.innerHTML = `<b>Prompt:</b> ${item.prompt} <br> <b>Response:</b> ${item.response}`;
+
+        entry.appendChild(promptHeader);
+        entry.appendChild(responseDiv);
+        historyElement.appendChild(entry);
+    });
+}
 
 // Request the selected text from the background page when popup is opened
 window.onload = function () {
