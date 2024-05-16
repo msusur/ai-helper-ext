@@ -17,7 +17,7 @@ document.getElementById('send').addEventListener('click', function () {
                 'Authorization': `Bearer ${result.apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4',
+                model: 'gpt-4o',
                 messages: [{
                     role: 'user',
                     content: fullPrompt
